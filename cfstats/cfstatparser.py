@@ -1,12 +1,28 @@
 import sys
 
-statfile = open(sys.argv[1])
+# Usage
+# python cfstatsparser.py <cfstats_data> <target_property> <optional_target_value>
+# add '' to target_property to handle whitespaces
+
+argument_length = len(sys.argv)
+if(argument_length > 1):
+    cfstats_file_path = sys.argv[1]
+else:
+    print "cfstats file required!"
+    sys.exit(1)
+if(argument_length > 2):
+    target_property = sys.argv[2]
+if(argument_length > 3):
+    target_value = sys.argv[3]
+
+
+statfile = open(cfstats_file_path)
 
 def filter_data(data):
-    if(len(sys.argv) == 2):
+    if(argument_length == 2):
         return data
     else:
-        if sys.argv[2].lower() in data.lower():
+        if target_property.lower() in data.lower():
             return data
         else:
             return None
@@ -32,23 +48,23 @@ for table in tables_data:
     if(len(tables_data[table]) == 0):
         print "No values found"
         break
-    if(len(tables_data[table]) > 1 and len(sys.argv) > 2):
+    if(len(tables_data[table]) > 1 and argument_length > 2):
         print "Please provide exact string as argument"
         break
-    if(len(sys.argv) == 3):
+    if(argument_length == 3):
         print table
         for data in tables_data[table]:
             print data
         print
         print
-    elif(len(sys.argv) >= 4):
+    elif(argument_length >= 4):
         tup = []
         if("ms" in tables_data[table][0].strip().split()[-1]):
-            if(float(tables_data[table][0].strip().split()[-2]) > float(sys.argv[3]) and "NaN" not in tables_data[table][0].strip().split()[-2]):
+            if(float(tables_data[table][0].strip().split()[-2]) > float(target_value) and "NaN" not in tables_data[table][0].strip().split()[-2]):
                 tup.append(table)
                 tup.append(tables_data[table][0])
         else:
-            if(float(tables_data[table][0].strip().split()[-1]) > float(sys.argv[3]) and "NaN" not in tables_data[table][0].strip().split()[-1]):
+            if(float(tables_data[table][0].strip().split()[-1]) > float(target_value) and "NaN" not in tables_data[table][0].strip().split()[-1]):
                 tup.append(table)
                 tup.append(tables_data[table][0])
         if(len(tup) > 0):
